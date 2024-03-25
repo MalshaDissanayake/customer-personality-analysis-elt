@@ -1,3 +1,4 @@
+#This is the code to extract data into four tables as people,products,promotions, and places.
 import psycopg2
 import pandas as pd
 import os
