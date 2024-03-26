@@ -1,7 +1,7 @@
-#This is the code to extract all data into one table
 import os
 import csv
 import psycopg2
+from datetime import datetime
 
 # Function to establish a connection to the PostgreSQL database
 def connect_to_database():
@@ -32,7 +32,6 @@ def create_table(conn):
                 Teenhome INTEGER,
                 Dt_Customer DATE,
                 Recency INTEGER,
-                Complain INTEGER,
                 MntWines NUMERIC,
                 MntFruits NUMERIC,
                 MntMeatProducts NUMERIC,
@@ -40,16 +39,19 @@ def create_table(conn):
                 MntSweetProducts NUMERIC,
                 MntGoldProds NUMERIC,
                 NumDealsPurchases INTEGER,
-                AcceptedCmp1 INTEGER,
-                AcceptedCmp2 INTEGER,
-                AcceptedCmp3 INTEGER,
-                AcceptedCmp4 INTEGER,
-                AcceptedCmp5 INTEGER,
-                Response INTEGER,
                 NumWebPurchases INTEGER,
                 NumCatalogPurchases INTEGER,
                 NumStorePurchases INTEGER,
-                NumWebVisitsMonth INTEGER
+                NumWebVisitsMonth INTEGER,
+                AcceptedCmp3 INTEGER,
+                AcceptedCmp4 INTEGER,
+                AcceptedCmp5 INTEGER,
+                AcceptedCmp1 INTEGER,
+                AcceptedCmp2 INTEGER,
+                Complain INTEGER,
+                Z_CostContact INTEGER,
+                Z_Revenue INTEGER,
+                Response INTEGER
             )
         """)
         conn.commit()
@@ -57,23 +59,38 @@ def create_table(conn):
     except psycopg2.Error as e:
         print("Error creating table:", e)
 
+# Function to parse date from string
+def parse_date(date_str):
+    try:
+        return datetime.strptime(date_str, '%m/%d/%Y').date()
+    except ValueError:
+        return None  # Return None if date format is not recognized
+
 # Function to extract data from the CSV file and load it into the PostgreSQL table
 def extract_and_load_data(conn):
     try:
         cursor = conn.cursor()
-        with open(os.path.join(os.path.dirname(__file__), '..', 'dataset', 'dataset.csv'), 'r') as file:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'dataset', 'dataset1.csv'), 'r') as file:
             reader = csv.reader(file)
             next(reader)  # Skip the header row
             for row in reader:
-                print("Row data:", row)  # Print row data for debugging
+                # Convert date string to datetime object
+                dt_customer = parse_date(row[7])
+                if dt_customer is None:
+                    print("Error parsing date:", row[7])
+                    continue
+
+                # Convert empty strings to None for numeric columns
+                row = [None if value == '' else value for value in row]
+
                 cursor.execute("""
                     INSERT INTO customer_personality (
                         ID,Year_Birth, Education, Marital_Status, Income, Kidhome, Teenhome, Dt_Customer,
-                        Recency, Complain, MntWines, MntFruits, MntMeatProducts, MntFishProducts,
-                        MntSweetProducts, MntGoldProds, NumDealsPurchases, AcceptedCmp1, AcceptedCmp2,
-                        AcceptedCmp3, AcceptedCmp4, AcceptedCmp5, Response, NumWebPurchases,
-                        NumCatalogPurchases, NumStorePurchases, NumWebVisitsMonth
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        Recency, MntWines, MntFruits, MntMeatProducts, MntFishProducts,
+                        MntSweetProducts, MntGoldProds, NumDealsPurchases,NumWebPurchases,
+                        NumCatalogPurchases, NumStorePurchases, NumWebVisitsMonth, AcceptedCmp3, AcceptedCmp4,
+                        AcceptedCmp5, AcceptedCmp1, AcceptedCmp2, Complain, Z_CostContact, Z_Revenue, Response
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, row)
         conn.commit()
         cursor.close()
