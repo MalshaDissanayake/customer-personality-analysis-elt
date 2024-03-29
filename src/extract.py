@@ -1,125 +1,114 @@
-#This is the code to extract data into four tables as people,products,promotions, and places.
-import psycopg2
-import pandas as pd
 import os
+import psycopg
+import csv
+import datetime
 
-# Get the directory of the current script
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Define the relative path to your dataset file
-dataset_path = os.path.join(script_dir, "..", "dataset", "dataset.csv")
-
-# Database connection parameters
-host = "localhost"
-port = "5432"   
-database = "postgres"   
-user = "postgres"
-password = "POSTGRESmalsha@3"
+# Function to convert date string to datetime.date object
+def convert_to_date(value):
+    return datetime.datetime.strptime(value, '%m/%d/%Y').date()
 
 try:
-    # Establish a connection to the database
-    connection = psycopg2.connect(
-        host=host,
-        port=port,
-        database=database,
-        user=user,
-        password=password
-    )
+    # Database connection information
+    dbname = "postgres"
+    user = "postgres"
+    password = "POSTGRESmalsha@3"
+    host = "localhost"
+    port = "5432"
 
-    # Create a cursor object to execute SQL queries
-    cursor = connection.cursor()
+    # Connect to the PostgreSQL database
+    conn = psycopg.connect(dbname=dbname, user=user,
+                           password=password, host=host, port=port)
 
-    # Create tables if they don't exist
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS people (
+    # Create a cursor object using the cursor() method
+    cursor = conn.cursor()
+
+    # Define the SQL statement to create the alldata table
+    create_table_query = """
+        CREATE TABLE IF NOT EXISTS alldata (
             ID SERIAL PRIMARY KEY,
-            Year_Birth INTEGER,
-            Education VARCHAR,
-            Marital_Status VARCHAR,
+            Year_Birth INT,
+            Education VARCHAR(50),
+            Marital_Status VARCHAR(50),
             Income FLOAT,
-            Kidhome INTEGER,
-            Teenhome INTEGER,
+            Kidhome INT,
+            Teenhome INT,
             Dt_Customer DATE,
-            Recency INTEGER,
-            Complain INTEGER
-        )
-    """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS product (
-            Product_ID SERIAL PRIMARY KEY,
-            ID INTEGER,
+            Recency INT,
+            Complain INT,
             MntWines FLOAT,
             MntFruits FLOAT,
             MntMeatProducts FLOAT,
             MntFishProducts FLOAT,
             MntSweetProducts FLOAT,
             MntGoldProds FLOAT,
-            FOREIGN KEY (ID) REFERENCES people(ID)
+            NumWebPurchases INT,
+            NumCatalogPurchases INT,
+            NumStorePurchases INT,
+            NumWebVisitsMonth INT,
+            NumDealsPurchases INT,
+            AcceptedCmp3 INT,
+            AcceptedCmp4 INT,
+            AcceptedCmp5 INT,
+            AcceptedCmp1 INT,
+            AcceptedCmp2 INT,
+            Response INT
         )
-    """)
+    """
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS promotions (
-            Promotion_ID SERIAL PRIMARY KEY,
-            ID INTEGER,
-            NumDealsPurchases INTEGER,
-            AcceptedCmp1 INTEGER,
-            AcceptedCmp2 INTEGER,
-            AcceptedCmp3 INTEGER,
-            AcceptedCmp4 INTEGER,
-            AcceptedCmp5 INTEGER,
-            Response INTEGER,
-            FOREIGN KEY (ID) REFERENCES people(ID)
-        )
-    """)
+    # Execute the SQL statement to create the alldata table
+    cursor.execute(create_table_query)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS places (
-            Place_ID SERIAL PRIMARY KEY,
-            ID INTEGER,
-            NumWebPurchases INTEGER,
-            NumCatalogPurchases INTEGER,
-            NumStorePurchases INTEGER,
-            NumWebVisitsMonth INTEGER,
-            FOREIGN KEY (ID) REFERENCES people(ID)
-        )
-    """)
+    # Get the directory of the current script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Define the relative path to your dataset file
+    dataset_path = os.path.join(script_dir, "..", "dataset", "dataset1.csv")
+
+    # Define the SQL statement to insert data into the alldata table
+    insert_query = """
+        INSERT INTO alldata (ID, Year_Birth, Education, Marital_Status, 
+                              Income, Kidhome, Teenhome, Dt_Customer, Recency, 
+                              Complain, MntWines, MntFruits, MntMeatProducts,
+                              MntFishProducts, MntSweetProducts, MntGoldProds, NumWebPurchases, NumCatalogPurchases, 
+                              NumStorePurchases, NumWebVisitsMonth,
+                              NumDealsPurchases, AcceptedCmp3, AcceptedCmp4, 
+                              AcceptedCmp5, AcceptedCmp1, AcceptedCmp2, 
+                              Response)
+        VALUES (%s, %s, %s, %s, %s, 
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, 
+                %s, %s, %s, %s, %s, 
+                %s, %s, %s, %s, 
+                %s, %s, %s, %s)
+    """
+
+    # Open the CSV file and iterate over its rows to insert into the database
+    with open(dataset_path, 'r', newline='') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip the header row
+        for row in reader:
+            print(row)  # Add this line for debugging
+            try:
+                # Convert date string to datetime.date object
+                row[7] = convert_to_date(row[7])
+                # Execute the SQL command
+                cursor.execute(insert_query, row)
+            except Exception as e:
+                print("Error inserting row:", e)
+                conn.rollback()  # Rollback the transaction in case of an error
 
     # Commit the transaction
-    connection.commit()
+    conn.commit()
 
-    # Read the dataset into a pandas DataFrame
-    df = pd.read_csv(dataset_path)
+    print("Data has been successfully loaded into the alldata table.")
 
-    # Insert data into the 'people' table
-    people_data = df[["ID", "Year_Birth", "Education", "Marital_Status", 
-                      "Income", "Kidhome", "Teenhome", "Dt_Customer", 
-                      "Recency", "Complain"]]
-    people_data.to_sql('people', connection, if_exists='replace', index=False)
-
-    # Insert data into the 'product' table
-    product_data = df[["ID", "MntWines", "MntFruits", "MntMeatProducts", 
-                       "MntFishProducts", "MntSweetProducts", "MntGoldProds"]]
-    product_data.to_sql('product', connection, if_exists='replace', index=False)
-
-    # Insert data into the 'promotions' table
-    promotions_data = df[["ID", "NumDealsPurchases", "AcceptedCmp1", "AcceptedCmp2",
-                          "AcceptedCmp3", "AcceptedCmp4", "AcceptedCmp5", "Response"]]
-    promotions_data.to_sql('promotions', connection, if_exists='replace', index=False)
-
-    # Insert data into the 'places' table
-    places_data = df[["ID", "NumWebPurchases", "NumCatalogPurchases", 
-                      "NumStorePurchases", "NumWebVisitsMonth"]]
-    places_data.to_sql('places', connection, if_exists='replace', index=False)
-
-    print("Data extraction and loading successful!")
-
-except (Exception, psycopg2.Error) as error:
-    print("Error while connecting to PostgreSQL:", error)
+except psycopg.Error as e:
+    print("Error connecting to PostgreSQL:", e)
 
 finally:
-    # Close the cursor and connection
-    if connection:
+    if 'cursor' in locals():
+        # Close the cursor
         cursor.close()
-        connection.close()
+    if 'conn' in locals():
+        # Close the database connection
+        conn.close()
