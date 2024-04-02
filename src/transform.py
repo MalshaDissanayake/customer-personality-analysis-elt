@@ -1,12 +1,12 @@
 import psycopg
 import os
 
-# Database connection parameters
-DB_NAME = "postgres"
-DB_USER = "postgres"
-DB_PASSWORD = "POSTGRESmalsha@3"
-DB_HOST = "localhost"
-DB_PORT = "5432"
+# Database connection parameters (replaced with environment variables)
+DB_NAME = os.environ.get("DB_NAME")
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")
 
 # Function to execute SQL script
 def execute_sql_script(script_path):
