@@ -131,9 +131,6 @@ poetry run python src/transform.py
 poetry run python src/report.py
 ```
 
-## Entity-Relationship (ER) Diagram
-
-
 ## Repository Structure 
 ```
 customer-personality-analysis-elt/
