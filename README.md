@@ -64,7 +64,7 @@ The dataset folder contains the CSV file used for this project.
 
 This ER diagram illustrates the database schema for the Customer Personality Analysis project. It depicts the entities, attributes, and relationships between the tables used in the analysis, including People, Products, Promotion, Place, and their respective attributes.
 
-![ER Diagram](docs/img/er_diagram.png)
+![ER Diagram](docs/img/ER_diagram.png)
 
 
 ## Installation and Execution Instructions
