@@ -95,11 +95,16 @@ cd customer-personality-analysis-elt
 
 4. **Set Up PostgreSQL Database (Optional):**
 - If using Docker:
-  ```
-  docker-compose up -d
-  ```
-- If using local PostgreSQL installation, ensure the database is running.
-
+  - Ensure Docker is installed on your system.
+  - Navigate to the project directory and run:
+    ```
+    docker-compose up -d
+    ```
+    This command will start a Docker container with PostgreSQL configured according to the specifications in `docker-compose.yml`.
+- If using local PostgreSQL installation:
+  - Ensure PostgreSQL is installed and running on your system.
+  - Adjust database connection settings in the project files as necessary.
+ 
 5. **Install Project Dependencies:**
 ```
 poetry init
