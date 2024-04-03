@@ -227,6 +227,45 @@ The reporting aspect of the Customer Personality Analysis project involves gener
 3. **Export to CSV Files:** 
    Once the transformation queries are executed and the data is processed, the `report.py` script exports the results to CSV files. Each CSV file represents a specific analysis or aspect of the customer personality analysis. The data is formatted using the `|` (pipe) character as a delimiter to ensure compatibility with CSV formatting standards.
 
+
+## Interpretation
+Using our `report.py` file, we can obtain results for each transformation question as CSV files. Upon examining these results, we observe that some transformations can be interpreted easily, while others require further analysis or visualization.
+
+For transformations like 4 (Complaints and Spending/Campaign Response) and 7 (Online vs. Offline Purchase Preferences), we can interpret the results on the spot. 
+
+**Interpretation for Transformation 4 (Complaints and Spending/Campaign Response):**
+- Customers who have not complained tend to have higher average spending across product categories compared to those who have complained.
+-  Among customers who have not complained, the acceptance rates for campaign offers vary, with the highest acceptance rate observed for Campaign 3 (cmp3_acceptance_rate), followed by Campaigns 4 and 5. Campaign 
+   2 has the lowest acceptance rate.
+-  For customers who have complained, Campaign 3 has the highest acceptance rate, while Campaigns 1, 2, and 4 have zero acceptance rates, and Campaign 5 has a moderate acceptance rate.
+
+**Interpretation for Transformation 7 (Online vs. Offline Purchase Preferences):**
+- Customers who prefer offline purchases (in-store) have higher total spending compared to those who prefer online purchases.
+- This suggests that there might be certain product categories or aspects of the shopping experience that are more conducive to offline purchases.
+- Understanding the differences in spending behavior between online and offline customers can inform marketing strategies and channel-specific promotions.
+
+For transformations like 2 (Customer Loyalty vs. Spending) and 8 (Website Engagement and Promotion Response), further analysis is required. Additionally, visualizations have been created to aid in understanding these transformations.
+
+Transformations like 2 (Customer Loyalty vs. Spending) and 8 (Impact of Children and Teenagers on Spending) require further analysis to fully interpret the results.
+
+**Interpretation for Transformation 2 (Customer Loyalty vs. Spending):**
+- While the SQL query provides data on the correlation between the number of days since enrollment and total spending, deeper analysis is needed to understand the nature of this correlation. 
+- Further exploration could involve visualizing the relationship between days since enrollment and spending, possibly using scatter plots or regression analysis to identify any patterns or trends.
+
+Below is a plot that I have drawn for further understanding:
+
+![Figure_T2](docs/img/Figure_T2.png)
+
+
+**Interpretation for Transformation 8 (Website Engagement and Promotion Response):**
+- The SQL query analyzes the relationship between the frequency of website visits (NumWebVisitsMonth) and the acceptance rates of promotional campaigns.
+- The results could indicate whether customers who visit the website more frequently are more likely to respond positively to promotional campaigns.
+- To interpret the results, we would need to examine the trends in acceptance rates across different levels of website engagement. Higher acceptance rates for promotional campaigns could suggest that increased online engagement positively influences campaign response. Conversely, lower acceptance rates might indicate that other factors beyond website visits influence campaign response.
+- Further analysis, such as plotting the acceptance rates against the frequency of website visits and conducting statistical tests, would provide deeper insights into the relationship between website engagement and promotion response. 
+
+Below is a plot that I have drawn for further understanding:
+![Figure_T8](docs/img/Figure_T8.png)
+
 ## Assumptions and Important Decisions
 
 - Assumption 1: The DBeaver application is used for database management. If you are using a different database management tool, adjust accordingly.
