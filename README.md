@@ -82,7 +82,7 @@ Before setting up the project, ensure you have the following prerequisites insta
 
 1. **Clone the Repository:**
 ```
-git clone <repository_url>
+git clone https://github.com/MalshaDissanayake/customer-personality-analysis-elt.git
 ```
 
 2. **Navigate to the Project Directory:**
