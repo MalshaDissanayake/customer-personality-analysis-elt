@@ -60,6 +60,11 @@ Customer personality analysis helps a business to modify its product based on it
 The dataset folder contains the CSV file used for this project.
 - **dataset1.csv**: This file contains the raw data used for the analysis. It includes information about customer attributes, product purchases, promotions, and places.
 
+## Customer Personality Analysis ER Diagram
+
+This ER diagram illustrates the database schema for the Customer Personality Analysis project. It depicts the entities, attributes, and relationships between the tables used in the analysis, including People, Products, Promotion, Place, and their respective attributes.
+
+![ER Diagram](docs/img/ER_diagram.png)
 
 
 ## Installation and Execution Instructions
@@ -139,6 +144,24 @@ customer-personality-analysis-elt/
 ├── pyproject.toml # Poetry configuration file
 └── README.md # Project README file
 ```
+### Data Loading (extract.py)
+
+1. **Script Description:**
+   The `extract.py` script is responsible for loading the CSV file into a PostgreSQL database. It utilizes the psycopg library (version 3) for database interactions.
+
+2. **Data Extraction Process:**
+   - The script first establishes a connection to the PostgreSQL database using the psycopg library.
+   - It then reads the CSV file containing the raw data.
+   - Next, the script creates a table named "alldata" in the database to store the raw data from the CSV file.
+   - The raw data is inserted into the "alldata" table in the PostgreSQL database.
+
+3. **Implementation Details:**
+   - The script utilizes the psycopg library to interact with the PostgreSQL database, allowing for efficient data loading and manipulation.
+   - It ensures that the data is accurately loaded into the database table, preserving the integrity of the original dataset.
+
+4. **Usage:**
+   - To execute the data loading process, run the `extract.py` script using Python.
+   - Ensure that the PostgreSQL database is running and accessible before executing the script.
 
 ## Transformation
 
@@ -176,6 +199,33 @@ The transformation questions are addressed using external SQL files located in t
 10. High-Spend Customer Segments:
 - SQL Query: Segment customers based on demographics, household composition, and engagement metrics (like campaign responses), and identify those segments which significantly exceed average spending in specific categories such as wines or meat products.
 
+### Transformation Process
+The transformation process involves executing SQL queries stored in external files located in the `sql` directory. These SQL files are categorized into three main types:
+
+1. **Table Creation and Population:** SQL files responsible for creating tables (`CREATE TABLE` statements) and populating them with data from the `alldata` table. These files ensure that the necessary tables are set up in the database before performing any transformations.
+
+2. **Transformation Queries:** SQL files containing queries to address each of the transformation questions outlined in the project requirements. These queries typically involve joining the relevant tables based on the common `ID` column and performing aggregations or calculations to derive insights from the data.
+
+### Interaction with `transform.py`
+The `transform.py` script orchestrates the entire transformation process by executing SQL files in a specific order:
+
+1. **Table Creation and Population:** First, the script executes SQL files responsible for creating and populating the necessary tables (`People`, `Products`, `Promotion`, and `Place`) based on the provided `alldata` table.
+
+2. **Transformation Queries:** Next, the script executes SQL files corresponding to each transformation question. These queries utilize the populated tables to derive insights into various aspects of customer behavior and preferences.
+
+### Report Generation
+The reporting aspect of the Customer Personality Analysis project involves generating insights and summaries based on the transformed data. The report is generated in the form of CSV files, with each file corresponding to a specific aspect of the analysis. The reporting process is facilitated by the report.py script, which executes transformation queries and exports the results to CSV files using the | (pipe) character as a separator.
+
+### Report Generation Process
+
+1. **Execution of Transformation Queries:** 
+   Before generating the report, the `report.py` script executes transformation queries stored in this file. These queries are designed to address various aspects of customer behavior and preferences, as outlined in the project requirements.
+
+2. **Data Extraction and Aggregation:** 
+   The transformation queries extract relevant data from the database and perform aggregations, calculations, and data manipulations to derive meaningful insights. For example, queries may calculate average spending by demographic groups, analyze promotion response rates, or examine the impact of customer complaints on spending behavior.
+
+3. **Export to CSV Files:** 
+   Once the transformation queries are executed and the data is processed, the `report.py` script exports the results to CSV files. Each CSV file represents a specific analysis or aspect of the customer personality analysis. The data is formatted using the `|` (pipe) character as a delimiter to ensure compatibility with CSV formatting standards.
 
 ## Assumptions and Important Decisions
 
